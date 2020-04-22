@@ -9,10 +9,9 @@
 #include <LiquidCrystal.h>       // ekran
 #include "DHT.h"          // czujnik
 
-#define DHTTYPE DHT22     // typ czujnika (DHT11). Jesli posiadamy DHT22 wybieramy DHT22 
+#define DHTTYPE DHT22    
 
 const int  orzesioneSensorPin = 2;
-const int  felsumaSensorPin = 3;
 const int screen4 = 4;
 const int screen5 = 5;
 const int screen6 = 6;
@@ -61,9 +60,6 @@ RTClib RTC;
 const int orzesioneLightOnHour = 9;
 const int orzesioneLightOffHour = 20;
 
-const int felsumaLightOnHour = 9;
-const int felsumaLightOffHour = 21;
-
 const int waterOnTime = 16 * 1000; //czas lania wody w milisekundach
 const int waterOn1 = 10;
 const int waterOn2 = 13;
@@ -81,10 +77,8 @@ void setup() {
 	felsumaSensor.begin();
 
 	pinMode(orzesioneLightPin, OUTPUT);
-	pinMode(felsumaLightPin, OUTPUT);
 	pinMode(waterPin, OUTPUT);
 
-	digitalWrite(felsumaLightPin, LOW);
 	digitalWrite(orzesioneLightPin, LOW);
 	digitalWrite(waterPin, HIGH);
 
@@ -98,8 +92,6 @@ void setup() {
 void loop() { ///////////////// LOOP //////////////////////////
 
  // Odczyt temperatury i wilgotności powietrza
-	float felsumaTemp = felsumaSensor.readTemperature();
-	float felsumaHumidity = felsumaSensor.readHumidity();
 	float orzesioneTemp = orzesioneSensor.readTemperature();
 	float orzesioneHumidity = orzesioneSensor.readHumidity();
 	
@@ -119,8 +111,6 @@ void loop() { ///////////////// LOOP //////////////////////////
 	//delay(1000);
 	DateTime now = RTC.now();
 	//ShowDateOnSerial(now);
-
-	FlipsLight(now);
 
 	OrzesioneLight(now.hour());
 
@@ -255,20 +245,6 @@ void OrzesioneLight(int hour) {     // TODO: złaczyc w jedna metode
 	}
 
 }
-
-void FlipsLight(DateTime now) {
-	if (now.hour() == felsumaLightOnHour)
-	{
-		digitalWrite(felsumaLightPin, LOW);
-	}
-
-	if (now.hour() == felsumaLightOffHour && now.minute() == 30) //2
-	{
-		digitalWrite(felsumaLightPin, HIGH);
-	}
-
-}
-
 
 
 void ShowDateOnSerial(DateTime now)

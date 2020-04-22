@@ -107,9 +107,9 @@
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="Terrarium3.ino">
+    <ClInclude Include="Terrarium3.ino">
       <FileType>CppCode</FileType>
-    </None>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
