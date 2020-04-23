@@ -6,7 +6,7 @@
 
 #define DHTTYPE DHT22    
 
-const int  orzesioneSensorPin = 2;
+const int orzesioneSensorPin = 2;
 const int screen4 = 4;
 const int screen5 = 5;
 const int screen6 = 6;
@@ -15,6 +15,7 @@ const int screen8 = 8;
 const int screen9 = 9;
 const int waterPin = 10;
 const int orzesioneLightPin = 11;
+const int redLightPin = 1;
 const int x = 13;
 
 // Select the pin used on LCD
@@ -59,7 +60,7 @@ const int waterOn2 = 13;
 const int waterOn3 = 16;
 const int waterOn4 = 22;
 
-bool isOrzesioneShow = true;
+bool redLightOn = false;
 bool showTemp = true;
 
 void setup() {
@@ -71,14 +72,12 @@ void setup() {
 	pinMode(orzesioneLightPin, OUTPUT);
 	pinMode(waterPin, OUTPUT);
 
-	digitalWrite(orzesioneLightPin, LOW);
 	digitalWrite(waterPin, HIGH);
 
 	Serial.println("Start:");
 
-	lcd.begin(16, 2);              // star
+	lcd.begin(16, 2);             
 	lcd.setCursor(0, 0);
-	lcd.print("Gekony orzesione"); // display text
 }
 
 void loop() { ///////////////// LOOP //////////////////////////
@@ -88,98 +87,76 @@ void loop() { ///////////////// LOOP //////////////////////////
 	float orzesioneHumidity = orzesioneSensor.readHumidity();
 	
 	lcd.setCursor(0, 0);
-	if (isOrzesioneShow)
+  ShowTempAndHumidity(orzesioneTemp, orzesioneHumidity);
+  
+	if (redLightOn)
 	{	
-		lcd.print("Gekony orzesione");
-		ShowTempAndHumidity(orzesioneTemp, orzesioneHumidity);
+		digitalWrite(redLightPin, LOW);
 	}
-	else
-	{
-		lcd.print("Dwa");
-		ShowTempAndHumidity(orzesioneTemp, orzesioneHumidity);
-	}
-	
 
 	//delay(1000);
 	DateTime now = RTC.now();
 	//ShowDateOnSerial(now);
 
-	OrzesioneLight(now.hour());
+	SwitchLight(now, orzesioneLightOnHour, orzesioneLightOffHour, orzesioneLightPin);
 
 	Water(now);
 
 	/////////////// LCD //////////////////////////////
 
-	//lcd.setCursor(0, 1);            // The cursor moves to the beginning of the second line.
-   // lcd.print(millis()/1000);      // Output waiting time 
-	lcd_key = read_LCD_buttons();  // read key
+  // lcd.print(millis()/1000);     // Output waiting time 
+	lcd_key = read_LCD_buttons();    // read key
 
-	switch (lcd_key)               // display key
+	switch (lcd_key)                 // display key
 	{
-	case btnRIGHT:
-	{
-		//ShowTempAndHumidity(orzesioneTemp, orzesioneHumidity);
-		break;
-	}
-	case btnLEFT:
-	{
-		delay(300);
-		lcd.print("LEFT   ");
-		break;
-	}
-	case btnUP:
-	{
-		delay(300);
-		showTemp = true;
-		break;
-	}
-	case btnDOWN:
-	{
-		delay(300);
-		showTemp = false;
-		break;
-	}
-	case btnSELECT:
-	{
-		delay(300);
-		lcd.clear();
-		isOrzesioneShow = !isOrzesioneShow;
-		break;
-	}
-	case btnNONE:
-	{
-		//lcd.print("NONE  ");
-		break;
-	}
+  	case btnRIGHT:
+  	{
+  		break;
+  	}
+  	case btnLEFT:
+  	{
+  		break;
+  	}
+  	case btnUP:
+  	{
+  		break;
+  	}
+  	case btnDOWN:
+  	{
+  		break;
+  	}
+  	case btnSELECT:
+  	{
+  		delay(300);
+  		redLightOn = !redLightOn;
+  		break;
+  	}
+  	case btnNONE:
+  	{
+  		//lcd.print("NONE  ");
+  		break;
+  	}
 	}
 }
 
 void ShowTempAndHumidity(float temp, float humidity) {
-	// Sprawdzamy czy są odczytane wartości
 	if (isnan(temp) || isnan(humidity))
 	{
-		// Jeśli nie, wyświetlamy informację o błędzie
 		Serial.println("Blad odczytu danych z czujnika");
 	}
 	else
 	{ 
-		lcd.setCursor(0, 1);
-		if (showTemp)
-		{
+	  	lcd.setCursor(0, 0);	    // On LCD	
 			lcd.print("Temp: ");
 			lcd.print(temp);
 			lcd.print(" st. C");
-		}
-		else
-		{
+	
+      lcd.setCursor(0, 1);
 			lcd.print("Wilg: ");
 			lcd.print(humidity);
 			lcd.print("%");
-		}
-
-	
-		// Jeśli tak, wyświetlamy wyniki pomiaru
-		Serial.print("Wilgotnosc: ");
+		
+		Serial.print("Wilgotnosc: "); // On Port Monitor
 		Serial.print(humidity);
 		Serial.print(" % ");
 		Serial.print("Temperatura: ");
@@ -225,19 +202,17 @@ void Water(DateTime now) {
 
 }
 
-void OrzesioneLight(int hour) {     // TODO: złaczyc w jedna metode
-	if (hour == orzesioneLightOnHour)
-	{
-		digitalWrite(orzesioneLightPin, LOW);
-	}
-
-	if (hour == orzesioneLightOffHour) //2
-	{
-		digitalWrite(orzesioneLightPin, HIGH);
-	}
-
+void SwitchLight(DateTime now, int onHour, int offHour, int lightPin)
+{
+  if (now.hour()>= onHour && now.hour() < offHour)
+  {
+    digitalWrite(orzesioneLightPin, LOW);
+  }
+  else
+  {
+    digitalWrite(orzesioneLightPin, HIGH);
+  }
 }
-
 
 void ShowDateOnSerial(DateTime now)
 {
