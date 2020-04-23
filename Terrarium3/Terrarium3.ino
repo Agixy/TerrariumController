@@ -1,8 +1,3 @@
-﻿// now.pde
-// Prints a snapshot of the current date and time along with the UNIX time
-// Modified by Andy Wickert from the JeeLabs / Ladyada RTC library examples
-// 5/15/11
-
 #include <Adafruit_AM2320.h>
 #include <Wire.h>
 #include <DS3231.h>       // zegar
@@ -20,7 +15,6 @@ const int screen8 = 8;
 const int screen9 = 9;
 const int waterPin = 10;
 const int orzesioneLightPin = 11;
-const int felsumaLightPin = 12;
 const int x = 13;
 
 // Select the pin used on LCD
@@ -53,8 +47,7 @@ int read_LCD_buttons()
 	return btnNONE;
 }
 
-DHT orzesioneSensor(orzesioneSensorPin, DHTTYPE); // definicja czujnika
-DHT felsumaSensor(felsumaSensorPin, DHTTYPE);
+DHT orzesioneSensor(orzesioneSensorPin, DHTTYPE);
 
 RTClib RTC;
 const int orzesioneLightOnHour = 9;
@@ -73,8 +66,7 @@ void setup() {
 	Serial.begin(9600);
 	Wire.begin();
 
-	orzesioneSensor.begin();            // inicjalizacja czujnika
-	felsumaSensor.begin();
+	orzesioneSensor.begin();
 
 	pinMode(orzesioneLightPin, OUTPUT);
 	pinMode(waterPin, OUTPUT);
@@ -103,8 +95,8 @@ void loop() { ///////////////// LOOP //////////////////////////
 	}
 	else
 	{
-		lcd.print("Felsuma");
-		ShowTempAndHumidity(felsumaTemp, felsumaHumidity);
+		lcd.print("Dwa");
+		ShowTempAndHumidity(orzesioneTemp, orzesioneHumidity);
 	}
 	
 
